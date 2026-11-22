@@ -7,4 +7,6 @@ edition = "2024"
 chrono = "0.4.45"
 inotify = "0.11.5"
 regex = "1.13.2"
+serde = { version = "1.0", features = ["derive"] }
 systemd = {version="0.11.1",features=["journal"]}
+toml = "1.2.2"

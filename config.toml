@@ -1,0 +1,49 @@
+[[regex]]
+
+[regex.ban]
+regex_list [
+    r"^[aA]uthentication (?:failure|error|failed) for .*? (?:from )?\S+( via \S+)?(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^User not known to the underlying authentication module for .*? (?:from )?\S+(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^Failed (?:publickey|\S+) for (?:invalid user )?.*? from \S+(?: port \d+)?(?: ssh\d*)?.*$",
+    r"^Failed publickey for invalid user \S+|.*? from \S+(?: port \d+)?(?: ssh\d*)?.*$"
+    r"^ROOT LOGIN REFUSED FROM \S+",
+    r"^[iI](?:llegal|nvalid) user .*? (?:from )?\S+(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^User \S+|.*? (?:from )?\S+ not allowed because not listed in AllowUsers(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^User \S+|.*? (?:from )?\S+ not allowed because listed in DenyUsers(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^User \S+|.*? (?:from )?\S+ not allowed because not in any group(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^refused connect from \S+ \(\S+\)",
+    r"^Received disconnect from \S+(?: port \d+)?:\s*3: .*: Auth fail(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^User \S+|.*? (?:from )?\S+ not allowed because a group is listed in DenyGroups(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^User \S+|.*? (?:from )?\S+ not allowed because none of user's groups are listed in AllowGroups(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^pam_[a-z]+\(sshd:auth\):\s+authentication failure;(?:\s+(?:(?:logname|e?uid|tty)=\S*)){0,4}\s+ruser=\S*\s+rhost=\S+(?:\s+user=\S*)?(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^maximum authentication attempts exceeded for (?:invalid user )?.*? (?:from )?\S+(?: port \d+)?(?: ssh\d*)?(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^User \S+|.*? not allowed because account is locked(?: port \d+)?(?: \[preauth\])?\s*",
+    r"^Disconnecting(?: from)?(?: (?:invalid|authenticating)) user \S+ \S+(?: port \d+)?:\s*Change of username or service not allowed:\s*.*\[preauth\]\s*$",
+    r"^Disconnected(?: from)?(?: (?:invalid|authenticating)) user \S+|.*? (?:from )?\S+(?: port \d+)? \[preauth\]\s*$"
+    r"^Disconnecting: Too many authentication failures(?: for \S+|.*?)?(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^(?:Connection (?:closed|reset)|Disconnect(?:ed|ing))(?: (?:by|from))?(?: (?:invalid|authenticating) user \S+|.*?)?(?: from)? \S+(?: port \d+)?(?:: [^\[]+)?(?: \[preauth\])?\s*$",
+    r"^(?:Connection (?:closed|reset)|Disconnect(?:ed|ing))(?: (?:by|from))?(?: (?:invalid|authenticating) user \S+|.*?)?(?: from)? \S+(?: port \d+)?(?:: [^\[]+)?\s+\[preauth\]\s*$",
+    r"^(?:Connection (?:closed|reset)|Disconnect(?:ed|ing))(?: (?:by|from))?(?: (?:invalid|authenticating) user \S+|.*?)?(?: from)? \S+(?:(?: port \d+)?(?:: [^\[]+)?|\s*)$",
+
+    r"^(?:Did not receive identification string from|Timeout before authentication for(?: connection from)?) \S+",
+    r"^kex_exchange_identification: (?:read: )?(?:[Cc]lient sent invalid protocol identifier|[Cc]onnection (?:closed by remote host|reset by peer))",
+    r"^Bad protocol version identification '(?:[^']|.*?)' (?:from )?\S+(?: port \d+)?(?: \[preauth\])?\s*$",
+    r"^SSH: Server;Ltype: (?:Authname|Version|Kex);Remote: \S+-\d+;[A-Z]\w+:",
+    r"^(?:banner exchange|ssh_dispatch_run_fatal): Connection from \S+(?: port \d+)?: (?:invalid format|(?:message authentication code incorrect|[Cc]onnection corrupted) \[preauth\])",
+]
+
+[regex.ignore]
+regex_list [
+    r"^Read from socket failed: Connection reset by peer",
+    r"^Received disconnect from \S+(?: port \d+)?:\s*11:",
+    r"^Received disconnect from \S+(?: port \d+)?:\s*14: No(?: supported)? authentication methods available",
+    r"^Unable to negotiate with \S+(?: port \d+)?: no matching (?:(?:\w+ ){0,2}\w+) found.",
+    r"^Unable to negotiate a (?:(?:\w+ ){0,2}\w+)",
+    r"^no matching (?:(?:\w+ ){0,2}\w+) found:",
+
+]
+
+[regex.accept] # e.g. previous fails will be erased for this ip
+regex_list [
+    r"^Accepted \w+ for \S+ from \S+(?:\s|$)",
+]
