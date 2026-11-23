@@ -1,3 +1,2 @@
-mod sshd;
-mod entry;
+pub mod entry;
 mod regex;

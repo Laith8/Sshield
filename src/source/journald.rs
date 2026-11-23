@@ -10,12 +10,18 @@ pub struct JournalSource {
 }
 
 impl JournalSource {
-    fn new() -> Result<Journal, &'static str> {
+    pub fn new() -> Result<JournalSource, &'static str> {
         let mut opts = OpenOptions::default();
         opts.system(true);
         opts.local_only(true);
         
-        opts.open().map_err(|_| "Error opening systemd journal")
+        let mut journal = opts.open().map_err(|_| "Error opening systemd journal")?;
+        journal.match_add("_SYSTEMD_UNIT", "ssh.service")
+            .map_err(|_| "Error adding journal filter")?;
+        journal.seek_tail()
+            .map_err(|_| "Error seeking journal")?;
+
+        Ok(Self { journal })
     }
 }
 
@@ -24,7 +30,6 @@ impl LogReader for JournalSource {
         let entry = self.journal
             .await_next_entry(timeout)
             .map_err(|_| LogReaderError::LogOpenError)?;
-
         match entry {
             None => Ok(None),
             Some(mut entry) => {

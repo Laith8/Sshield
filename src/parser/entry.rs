@@ -3,6 +3,7 @@ use crate::source::event::RawLoginEntry;
 use crate::parser::regex::{REGEX_ACCEPTED, REGEX_FAILED, REGEX_IGNORED, REGEX_IP, REGEX_PORT, REGEX_USER};
 use std::str::FromStr;
 
+#[derive(Debug)]
 pub enum LoginEvent {
     AcceptedLogin(LoginEntry),
     FailedLogin (LoginEntry),
@@ -10,6 +11,7 @@ pub enum LoginEvent {
     Unparseable(RawLoginEntry)
 }
 
+#[derive(Debug)]
 /// timestamp in microseconds
 pub struct LoginEntry {
     message: String,
@@ -23,14 +25,30 @@ impl LoginEvent {
     pub fn from_raw_login_entry(entry: RawLoginEntry) -> LoginEvent {
         let message = &entry.message;
 
+        let login_entry = LoginEntry::from_raw_login_entry(&entry);
+
         if REGEX_ACCEPTED.is_match(message) {
-            todo!()
+            LoginEvent::AcceptedLogin(login_entry)
         } else if REGEX_FAILED.is_match(message) {
-            todo!()
+             LoginEvent::FailedLogin(login_entry)
         } else if REGEX_IGNORED.is_match(message) {
-            todo!()
+             LoginEvent::IgnoredLogin(login_entry)
         } else {
             LoginEvent::Unparseable(entry)
+        }
+    }
+
+    
+}
+
+impl LoginEntry {
+    fn from_raw_login_entry(entry: &RawLoginEntry) -> Self {
+        LoginEntry {
+            message: entry.message.clone(),
+            user: Self::get_user(&entry.message),
+            ip: Self::get_ip(&entry.message),
+            port: Self::get_port(&entry.message),
+            timestamp: entry.timestamp
         }
     }
 

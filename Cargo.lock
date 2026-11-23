@@ -404,7 +404,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sshecure"
+name = "sshield"
 version = "0.1.0"
 dependencies = [
  "chrono",

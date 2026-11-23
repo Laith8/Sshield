@@ -1,4 +1,4 @@
-mod reader;
-mod journald;
+pub mod reader;
+pub mod journald;
 pub mod event;
 mod error;
