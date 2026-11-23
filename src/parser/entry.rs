@@ -4,6 +4,7 @@ use crate::parser::regex::{REGEX_ACCEPTED, REGEX_FAILED, REGEX_IGNORED, REGEX_IP
 use std::str::FromStr;
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub enum LoginEvent {
     AcceptedLogin(LoginEntry),
     FailedLogin (LoginEntry),
@@ -12,6 +13,7 @@ pub enum LoginEvent {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 /// timestamp in microseconds
 pub struct LoginEntry {
     message: String,

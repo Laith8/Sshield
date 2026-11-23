@@ -2,8 +2,7 @@ use systemd::Journal;
 use systemd::journal::OpenOptions;
 use crate::source::reader::LogReader;
 use crate::source::event::RawLoginEntry;
-use crate::source::error::LogReaderError;
-use std::time::Duration;
+use std::time::{Duration,SystemTime,UNIX_EPOCH};
 
 pub struct JournalSource {
     journal: Journal
@@ -18,31 +17,37 @@ impl JournalSource {
         let mut journal = opts.open().map_err(|_| "Error opening systemd journal")?;
         journal.match_add("_SYSTEMD_UNIT", "ssh.service")
             .map_err(|_| "Error adding journal filter")?;
-        journal.seek_tail()
-            .map_err(|_| "Error seeking journal")?;
+        journal.seek_realtime_usec(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_err(|_| "Failed to get system time")?
+                .as_micros() as u64)
+                .map_err(|_| "Failed to seek in journal")?;
 
         Ok(Self { journal })
     }
 }
 
 impl LogReader for JournalSource {
-    fn await_next_entry(&mut self, timeout: Option<Duration>) -> Result<Option<RawLoginEntry>, LogReaderError> {
+    fn blocking_next_entry(&mut self, timeout: Option<Duration>) -> Result<Option<RawLoginEntry>, &'static str> {
         let entry = self.journal
             .await_next_entry(timeout)
-            .map_err(|_| LogReaderError::LogOpenError)?;
+            .map_err(|_| "Failed to read journal")?;
         match entry {
             None => Ok(None),
-            Some(mut entry) => {
-                Ok(Some(
-                    RawLoginEntry {
-                    timestamp: entry
-                        .remove("_SOURCE_REALTIME_TIMESTAMP")
-                        .ok_or(LogReaderError::InvalidLogData)?
-                        .parse()
-                        .map_err(|_| LogReaderError::InvalidLogData)?,
-                    message: entry.remove("MESSAGE").ok_or(LogReaderError::InvalidLogData)?
-                }
-                ))
+            Some(mut e) => {
+                Ok(
+                    Some(
+                        RawLoginEntry {
+                            timestamp:e
+                                .remove("_SOURCE_REALTIME_TIMESTAMP")
+                                .ok_or("_SOURCE_REALTIME_TIMESTAMP not found in journal")?
+                                .parse()
+                                .map_err(|_| "Could not parse journal value of _SOURCE_REALTIME_TIMESTAMP")?,
+                            message: e.remove("MESSAGE").ok_or("MESSAGE not found in journal")? 
+                        }
+                    )
+                )
             }
         }
     }

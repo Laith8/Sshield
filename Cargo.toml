@@ -10,3 +10,13 @@ regex = "1.13.2"
 serde = { version = "1.0", features = ["derive"] }
 systemd = {version="0.11.1",features=["journal"]}
 toml = "1.2.2"
+
+[profile.release]
+opt-level = "s"
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
+debug = false
+incremental = false
+overflow-checks = false
