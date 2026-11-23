@@ -9,3 +9,8 @@ fn main() -> Result<(), &'static str> {
 
     Ok(())
 }
+
+// plans until v.1:
+// - make a cli to control things like bans or future config details(which aren't implemented yet even)
+// - propper config file management
+// - to make it more stable by integrating into the system

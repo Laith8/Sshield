@@ -17,6 +17,14 @@ impl JournalSource {
         let mut journal = opts.open().map_err(|_| "Error opening systemd journal")?;
         journal.match_add("_SYSTEMD_UNIT", "ssh.service")
             .map_err(|_| "Error adding journal filter")?;
+
+        let ssh = journal.match_add("_SYSTEMD_UNIT", "ssh.service").is_err();
+        let sshd = journal.match_add("_SYSTEMD_UNIT", "sshd.service").is_err();
+
+        if ssh && sshd {
+            return Err("sshd service name not found");
+        }
+        
         journal.seek_realtime_usec(
             SystemTime::now()
                 .duration_since(UNIX_EPOCH)
